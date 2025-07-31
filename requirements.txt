@@ -1,8 +1,8 @@
 streamlit
+python-dotenv
 langchain
 langgraph
 openai
-python-dotenv
-chromadb
+langchain-community
 sentence-transformers
-torch
+chromadb

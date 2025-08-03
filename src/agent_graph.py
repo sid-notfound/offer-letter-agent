@@ -21,10 +21,12 @@ load_dotenv()
 
 # 🔑 Set up LLM
 llm = ChatOpenAI(
-    model="openrouter/google/gemma-7b-it",  # or mistralai/mistral-7b-instruct (faster variant)
+    model="openrouter/mistral/mistral-7b-instruct",  # 🚀 faster response
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY")
+    api_key=os.getenv("OPENAI_API_KEY"),
+    timeout=20,
 )
+
 
 # 📄 Load employee metadata from CSV
 def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):

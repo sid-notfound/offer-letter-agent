@@ -1,40 +1,34 @@
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-import sqlite3  # re-import so you can access sqlite3.sqlite_version if needed
+import sqlite3
 print(f"Patched sqlite3 version: {sqlite3.sqlite_version}")
+
 import os
 import csv
 from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.runnables import RunnableLambda
-# from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph, END
-from langchain_community.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
-import chromadb
-from chromadb import PersistentClient
-
-# ✅ Load environment variables (GEMINI_API_KEY must be in .env)
-load_dotenv()
-
-# 🔑 Set up Gemini LLM
 from langchain_community.chat_models import ChatOpenAI
 
+# ✅ Load environment variables
+load_dotenv()
+
+# 🔑 Set up LLM
 llm = ChatOpenAI(
-    model="mistralai/mistral-7b-instruct",  # No "openrouter/" prefix
-    base_url="https://openrouter.ai/api/v1",  # OpenRouter base
-    api_key=os.getenv("OPENAI_API_KEY"),  # Your actual key
+    model="mistralai/mistral-7b-instruct",
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.getenv("OPENAI_API_KEY"),
 )
 
-
-# 📄 Load employee metadata from TSV
+# 📄 Load employee metadata from CSV
 def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
     with open(csv_path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)  # ✅ Auto-detects delimiter (assumes comma)
+        reader = csv.DictReader(f)
         for row in reader:
             if row["Employee Name"].lower() == name.lower():
                 return {
@@ -54,11 +48,6 @@ def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
 
 # 🧠 Load Chroma vectorstore
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-# initialize embedding model
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-# use new chroma client directly
 vectordb = Chroma(
     persist_directory="vectorstore/chroma_db",
     embedding_function=embedding_model
@@ -67,7 +56,6 @@ retriever = vectordb.as_retriever(search_kwargs={"k": 4})
 
 # 🧱 LangGraph state type
 class State(dict):
-    """Graph state format: {'name': str, 'employee_data': dict, 'docs': list, 'letter': str}"""
     pass
 
 # 🔹 Node 1 – Load employee data

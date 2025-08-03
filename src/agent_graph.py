@@ -59,11 +59,8 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # use new chroma client directly
-chroma_client =  PersistentClient(path="vectorstore/chroma_db")
-
 vectordb = Chroma(
-    client=chroma_client,
-    collection_name="offer_letters",
+    persist_directory="vectorstore/chroma_db",
     embedding_function=embedding_model
 )
 retriever = vectordb.as_retriever(search_kwargs={"k": 4})

@@ -48,15 +48,16 @@ def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
 # 🧠 Load Chroma vectorstore
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 chroma_settings = Settings(
-    chroma_api_impl="chromadb.api.local.LocalAPI",
-    persist_directory="vectorstore/chroma_db"
+    persist_directory="vectorstore/chroma_db",
+    anonymized_telemetry=False
 )
 
 vectordb = Chroma(
-    client_settings=chroma_settings,
     embedding_function=embedding_model,
+    client_settings=chroma_settings,
     collection_name="offer_letters"
 )
+
 
 # 🧱 LangGraph state type
 class State(dict):

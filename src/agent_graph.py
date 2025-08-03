@@ -57,15 +57,16 @@ vectordb = Chroma(
     client_settings=chroma_settings,
     collection_name="offer_letters"
 )
-
+retriever = vectordb.as_retriever(search_kwargs={"k": 4})
 
 # 🧱 LangGraph state type
 class State(dict):
+    """Graph state format: {'name': str, 'employee_data': dict, 'docs': list, 'letter': str}"""
     pass
 
 # 🔹 Node 1 – Load employee data
 def get_employee_node(state: State):
-    name = state["Employee Name"]
+    name = state["name"]
     employee_data = load_employee_data(name)
     return {**state, "employee_data": employee_data}
 

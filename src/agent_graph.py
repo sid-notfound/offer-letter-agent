@@ -21,9 +21,9 @@ load_dotenv()
 
 # 🔑 Set up LLM
 llm = ChatOpenAI(
-    model="openai/gpt-3.5-turbo",
+    model="openrouter/google/gemma-7b-it",  # or mistralai/mistral-7b-instruct (faster variant)
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY"),
+    api_key=os.getenv("OPENAI_API_KEY")
 )
 
 # 📄 Load employee metadata from CSV

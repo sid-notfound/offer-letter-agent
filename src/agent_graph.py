@@ -11,6 +11,7 @@ from langgraph.graph import StateGraph, END
 from langchain_community.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 import chromadb
+from chromadb import PersistentClient
 # ✅ Load environment variables (GEMINI_API_KEY must be in .env)
 load_dotenv()
 
@@ -52,7 +53,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # use new chroma client directly
-chroma_client = chromadb.PersistentClient(path="vectorstore/chroma_db")
+chroma_client =  PersistentClient(path="vectorstore/chroma_db")
 
 vectordb = Chroma(
     client=chroma_client,

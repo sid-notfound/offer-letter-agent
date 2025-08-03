@@ -2,7 +2,6 @@ import os
 import csv
 from pathlib import Path
 from dotenv import load_dotenv
-from chromadb.config import Settings
 from langchain_core.runnables import RunnableLambda
 # from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.embeddings import HuggingFaceEmbeddings

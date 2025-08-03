@@ -14,7 +14,8 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.chat_models import ChatOpenAI
 from chromadb.config import Settings
-
+from typing import TypedDict, List
+from langchain_core.documents import Document
 # ✅ Load environment variables
 load_dotenv()
 
@@ -61,9 +62,12 @@ vectordb = Chroma(
 retriever = vectordb.as_retriever(search_kwargs={"k": 4})
 
 # 🧱 LangGraph state type
-class State(dict):
-    """Graph state format: {'name': str, 'employee_data': dict, 'docs': list, 'letter': str}"""
-    pass
+
+class State(TypedDict):
+    name: str
+    employee_data: dict
+    docs: List[Document]
+    letter: str
 
 # 🔹 Node 1 – Load employee data
 def get_employee_node(state: State):

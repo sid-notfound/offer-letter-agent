@@ -65,7 +65,7 @@ class State(dict):
 
 # 🔹 Node 1 – Load employee data
 def get_employee_node(state: State):
-    name = state["name"]
+    name = state["Employee Name"]
     employee_data = load_employee_data(name)
     return {**state, "employee_data": employee_data}
 

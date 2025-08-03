@@ -12,6 +12,11 @@ from langchain_community.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 import chromadb
 from chromadb import PersistentClient
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+import sqlite3  # re-import so you can access sqlite3.sqlite_version if needed
+print(f"Patched sqlite3 version: {sqlite3.sqlite_version}")
 # ✅ Load environment variables (GEMINI_API_KEY must be in .env)
 load_dotenv()
 

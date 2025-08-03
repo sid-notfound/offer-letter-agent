@@ -2,14 +2,16 @@ import os
 import csv
 from pathlib import Path
 from dotenv import load_dotenv
-
+from chromadb.config import Settings
 from langchain_core.runnables import RunnableLambda
 # from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph, END
-
+from langchain_community.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+import chromadb
 # ✅ Load environment variables (GEMINI_API_KEY must be in .env)
 load_dotenv()
 
@@ -46,8 +48,16 @@ def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
 
 # 🧠 Load Chroma vectorstore
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+# initialize embedding model
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+# use new chroma client directly
+chroma_client = chromadb.PersistentClient(path="vectorstore/chroma_db")
+
 vectordb = Chroma(
-    persist_directory="vectorstore/chroma_db",
+    client=chroma_client,
+    collection_name="offer_letters",
     embedding_function=embedding_model
 )
 retriever = vectordb.as_retriever(search_kwargs={"k": 4})

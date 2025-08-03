@@ -21,7 +21,7 @@ load_dotenv()
 
 # 🔑 Set up LLM
 llm = ChatOpenAI(
-    model="mistralai/mistral-7b-instruct",
+    model="openai/gpt-3.5-turbo",
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENAI_API_KEY"),
 )

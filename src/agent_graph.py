@@ -14,6 +14,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.chat_models import ChatOpenAI
 from chromadb.config import Settings
+
 # ✅ Load environment variables
 load_dotenv()
 
@@ -29,7 +30,7 @@ def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row["Employee Name"].lower() == name.lower():
+            if row["Employee Name"].strip().lower() == name.strip().lower():
                 return {
                     "name": row["Employee Name"],
                     "position": row["Department"],
@@ -40,10 +41,11 @@ def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
                     "ctc": row["Total CTC (INR)"],
                     "joining_date": row["Joining Date"],
                     "location": row["Location"],
-                    "function": row["Department"],
-                    "team": row["Department"],
+                    # Fallbacks — use Department if not explicitly present
+                    "function": row.get("Function", row["Department"]),
+                    "team": row.get("Team", row["Department"]),
                 }
-    raise ValueError(f"No employee named {name} found.")
+    raise ValueError(f"No employee named '{name}' found in metadata.")
 
 # 🧠 Load Chroma vectorstore
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -51,7 +53,6 @@ chroma_settings = Settings(
     persist_directory="vectorstore/chroma_db",
     anonymized_telemetry=False
 )
-
 vectordb = Chroma(
     embedding_function=embedding_model,
     client_settings=chroma_settings,
@@ -66,12 +67,15 @@ class State(dict):
 
 # 🔹 Node 1 – Load employee data
 def get_employee_node(state: State):
-    name = state["name"]
-    employee_data = load_employee_data(name)
+    if "name" not in state:
+        raise ValueError("❌ Missing key 'name' in state.")
+    print("✅ Getting employee data for:", state["name"])
+    employee_data = load_employee_data(state["name"])
     return {**state, "employee_data": employee_data}
 
 # 🔹 Node 2 – Retrieve policy documents
 def retrieve_docs_node(state: State):
+    print("📄 Retrieving docs for:", state["name"])
     docs = retriever.invoke(f"Generate offer letter for {state['name']}")
     return {**state, "docs": docs}
 
@@ -116,6 +120,7 @@ Output only the full formatted offer letter.
         context=context,
     )
 
+    print("✍️ Generating offer letter...")
     letter = llm.invoke(full_prompt).content
     return {**state, "letter": letter}
 

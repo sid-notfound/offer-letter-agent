@@ -21,11 +21,12 @@ load_dotenv()
 
 # 🔑 Set up LLM
 llm = ChatOpenAI(
-    model="openrouter/mistral/mistral-7b-instruct",  # 🚀 faster response
+    model="mistral-7b-instruct",   # correct name
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENAI_API_KEY"),
     timeout=20,
 )
+
 
 
 # 📄 Load employee metadata from CSV

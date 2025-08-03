@@ -13,7 +13,7 @@ from langgraph.graph import StateGraph, END
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.chat_models import ChatOpenAI
-
+from chromadb.config import Settings
 # ✅ Load environment variables
 load_dotenv()
 
@@ -47,13 +47,16 @@ def load_employee_data(name: str, csv_path="data/employee_metadata.csv"):
 
 # 🧠 Load Chroma vectorstore
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-
-vectordb = Chroma(
-    persist_directory="vectorstore/chroma_db",
-    embedding_function=embedding_model
+chroma_settings = Settings(
+    chroma_api_impl="chromadb.api.local.LocalAPI",
+    persist_directory="vectorstore/chroma_db"
 )
 
-retriever = vectordb.as_retriever(search_kwargs={"k": 4})
+vectordb = Chroma(
+    client_settings=chroma_settings,
+    embedding_function=embedding_model,
+    collection_name="offer_letters"
+)
 
 # 🧱 LangGraph state type
 class State(dict):
